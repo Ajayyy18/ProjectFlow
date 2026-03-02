@@ -260,7 +260,7 @@ RLS ensures:
 
 This project was developed by a team of 4 members.
 
-### 👨‍💼 My Role (D Ajay Kumar  - Team Leader)
+### 👨‍💼 My Role - Team Leader
 
 * Designed system architecture
 * Created database schema
