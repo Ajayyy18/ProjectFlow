@@ -386,7 +386,16 @@ For evaluation purposes, a demo admin account is available:
 - Password: `admin123`
 - Role: Admin
 
-**To set up the demo account:**
+**Quick Start for Evaluators:**
+1. Open the deployed application at your Vercel URL
+2. Click "Login" 
+3. Enter demo credentials:
+   - Email: `admin@projectflow.demo`
+   - Password: `admin123`
+4. You will be redirected to the Admin Dashboard
+5. Explore all admin features (teams, tasks, analytics)
+
+**To set up the demo account (if not already configured):**
 1. Go to Supabase Dashboard → Authentication → Users
 2. Create a new user with email: `admin@projectflow.demo` and password: `admin123`
 3. Run `supabase/setup.sql` in SQL Editor to set the admin role
