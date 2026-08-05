@@ -377,6 +377,40 @@ Developed as a mini project during B.Tech 3rd Year.
 
 ---
 
+## 🎓 Demo Account for Evaluation
+
+For evaluation purposes, a demo admin account is available:
+
+**Demo Admin Credentials:**
+- Email: `admin@projectflow.demo`
+- Password: `admin123`
+- Role: Admin
+
+**To set up the demo account:**
+1. Go to Supabase Dashboard → Authentication → Users
+2. Create a new user with email: `admin@projectflow.demo` and password: `admin123`
+3. Run `supabase/setup.sql` in SQL Editor to set the admin role
+4. Login with these credentials to access all admin features
+
+**Admin Features Available:**
+- Create and manage teams (max 4 members per team)
+- Assign team leaders
+- Create and assign tasks to teams
+- Set task deadlines
+- Monitor task completion status
+- View analytics dashboard with completion rates
+- Track team performance metrics
+- Monitor team communication via chat
+
+**Student Features Available:**
+- View assigned team details
+- See task assignments and deadlines
+- Update task status (pending → completed)
+- Real-time team chat
+- Track personal progress
+
+---
+
 ## 📝 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
