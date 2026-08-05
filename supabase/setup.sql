@@ -39,13 +39,20 @@ UPDATE public.profiles
 SET role = 'admin'::user_role 
 WHERE id = 'e678edb0-663c-4d0b-ad59-462a940e0bd3';
 
--- Step 3.5: Set demo admin account role (create user in Supabase Auth first)
+-- Step 3.5: Create demo admin account for evaluation purposes
 -- Note: This is for demonstration purposes only. Change these credentials in production.
 -- Demo credentials: admin@projectflow.demo / admin123
--- IMPORTANT: Create this user in Supabase Auth Dashboard FIRST, then run this to set admin role
-UPDATE public.profiles 
-SET role = 'admin'::user_role 
-WHERE email = 'admin@projectflow.demo';
+-- You need to create this user in Supabase Auth first, then this will set their role
+INSERT INTO public.profiles (id, email, full_name, role, roll_number, branch)
+VALUES (
+  '00000000-0000-0000-0000-000000000001'::uuid,
+  'admin@projectflow.demo',
+  'Demo Admin',
+  'admin'::user_role,
+  'DEMO001',
+  'CSE'
+)
+ON CONFLICT (id) DO UPDATE SET role = 'admin'::user_role;
 
 -- Step 3.5: Add RLS policies for tasks table
 DROP POLICY IF EXISTS "Tasks are viewable by team members" ON tasks;
