@@ -397,7 +397,7 @@ For evaluation purposes, a demo admin account is available:
 
 **To set up the demo account (if not already configured):**
 1. Go to Supabase Dashboard → Authentication → Users
-2. Create a new user with email: `admin@projectflow.demo` and password: `admin123`
+2. Create a new user with email: `admin@projectflow.demo` and password: `admin123` (enable "Auto Confirm User")
 3. Run `supabase/setup.sql` in SQL Editor to set the admin role
 4. Login with these credentials to access all admin features
 
