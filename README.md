@@ -1,8 +1,8 @@
-# 🚀 ProjectFlow – Educational Project Management System
+# 🚀 ProjectFlow – Efficient Project and Team Management System
 
 ## 📌 Overview
 
-**ProjectFlow** is a full-stack educational project management platform designed to streamline academic project collaboration between students and administrators.
+**ProjectFlow** is a full-stack educational project management system designed to help academic institutions to streamline project collaboration between students and administrators.
 
 It enables:
 
