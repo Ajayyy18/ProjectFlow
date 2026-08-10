@@ -13,7 +13,7 @@ BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- Create profiles table
 CREATE TABLE profiles (
@@ -34,6 +34,7 @@ CREATE TRIGGER profiles_updated_at
   EXECUTE FUNCTION public.handle_updated_at();
 
 -- Create handle_new_user function for auth trigger
+-- SECURITY: Always assigns 'student' role, ignoring user-supplied metadata
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 BEGIN
@@ -42,13 +43,13 @@ BEGIN
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'full_name', 'User'),
-    COALESCE(NEW.raw_user_meta_data->>'role', 'student'),
+    'student',
     NEW.raw_user_meta_data->>'roll_number',
     NEW.raw_user_meta_data->>'branch'
   );
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- Trigger for new user creation (will be activated when auth is set up)
 -- Note: This trigger references auth.users which is managed by Supabase
@@ -103,5 +104,13 @@ CREATE TABLE messages (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Note: RLS policies will be added in a separate security-focused branch
--- This migration focuses only on the safe foundation structure
+-- Enable Row Level Security on all tables (secure by default)
+-- RLS policies will be added in a separate security-focused branch
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE teams ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
+
+-- Note: RLS is enabled but no policies are defined yet
+-- This makes the tables secure by default (no access until policies are added)
+-- Policies will be added in a separate security-focused branch

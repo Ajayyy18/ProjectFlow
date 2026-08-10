@@ -15,7 +15,7 @@ Migrations are stored in `supabase/migrations/` with timestamped filenames for p
 
 ### Initial Schema
 
-**File:** `supabase/migrations/20240810_initial_schema.sql`
+**File:** `supabase/migrations/20260810_initial_schema.sql`
 
 This migration creates the core database structure:
 
@@ -29,7 +29,7 @@ This migration creates the core database structure:
 To set up a fresh test database:
 
 1. Open the Supabase SQL Editor for your test project
-2. Open `supabase/migrations/20240810_initial_schema.sql`
+2. Open `supabase/migrations/20260810_initial_schema.sql`
 3. Execute the SQL
 
 This will:
@@ -37,6 +37,7 @@ This will:
 - Create all required tables
 - Set up triggers for automatic timestamp updates
 - Create the auth trigger for new user profile creation
+- Enable Row Level Security on all tables (secure by default)
 
 ### Database Schema Overview
 
@@ -76,11 +77,23 @@ This will:
 - `content` - Message content
 - `created_at` - Timestamp
 
+### Row Level Security (RLS) Status
+
+**RLS is ENABLED on all tables** (secure by default)
+- `profiles`, `teams`, `tasks`, and `messages` all have RLS enabled
+- **No RLS policies are defined yet** - This is intentional
+- With RLS enabled but no policies, all table access is blocked by default
+- This ensures the database is secure from the start
+
+**RLS policies will be added in a separate security-focused branch**
+- The next branch will add specific policies to control access
+- This separation allows for proper security review and testing
+
 ### What's NOT Included (Yet)
 
 The following will be added in separate, focused branches:
 
-- **RLS (Row Level Security) policies** - Will be added in a security-focused branch
+- **RLS policies** - Will be added in a security-focused branch
 - **Individual task assignment** - Currently tasks are team-based only
 - **Analytics tables** - Will be added when analytics features are implemented
 
