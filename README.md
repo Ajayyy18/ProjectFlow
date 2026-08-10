@@ -359,9 +359,10 @@ Developed as a mini project during B.Tech 3rd Year.
    ```
 
 4. Set up the database:
-   - Go to your Supabase dashboard → SQL Editor
-   - Run the SQL from `supabase/schema.sql` to create tables and RLS policies
-   - Run the SQL from `supabase/setup.sql` to configure permissions and create your user profile
+   - **IMPORTANT**: See `supabase/README.md` for detailed database setup instructions
+   - The initial migration is for a FRESH TEST DATABASE only
+   - DO NOT run the migration on an existing production database
+   - Production database migration will be planned separately
 
 5. Start the development server:
    ```bash
@@ -370,51 +371,13 @@ Developed as a mini project during B.Tech 3rd Year.
 
 6. Open your browser and navigate to the URL shown (usually `http://localhost:5173` or `http://localhost:5174`)
 
-**Troubleshooting:**
-- If you get a 403 error, run `supabase/setup.sql` in Supabase SQL Editor
-- If your profile doesn't exist, the setup script will create it automatically
-- The setup script sets your user as admin - remove the UPDATE statement if you want to be a student
-
 ---
 
-## 🎓 Demo Account
+## 🔐 Account Setup
 
-**Demo Admin Credentials:**
-- Email: `admin@projectflow.demo`
-- Password: `admin123`
-- Role: Admin
+**New accounts are created as students by default.** Administrator role assignment is intentionally deferred to the upcoming security branch. For database setup instructions, see `supabase/README.md`. 
 
-**Quick Start:**
-1. Open the deployed application at your Vercel URL
-2. Click "Login" 
-3. Enter demo credentials:
-   - Email: `admin@projectflow.demo`
-   - Password: `admin123`
-4. You will be redirected to the Admin Dashboard
-5. Explore all admin features (teams, tasks, analytics)
-
-**To set up the demo account (if not already configured):**
-1. Go to Supabase Dashboard → Authentication → Users
-2. Create a new user with email: `admin@projectflow.demo` and password: `admin123` (enable "Auto Confirm User")
-3. Run `supabase/setup.sql` in SQL Editor to set the admin role
-4. Login with these credentials to access all admin features
-
-**Admin Features Available:**
-- Create and manage teams (max 4 members per team)
-- Assign team leaders
-- Create and assign tasks to teams
-- Set task deadlines
-- Monitor task completion status
-- View analytics dashboard with completion rates
-- Track team performance metrics
-- Monitor team communication via chat
-
-**Student Features Available:**
-- View assigned team details
-- See task assignments and deadlines
-- Update task status (pending → completed)
-- Real-time team chat
-- Track personal progress
+**Important:** The current migration is only for a fresh test database and must not be run against the existing production database.
 
 ---
 
