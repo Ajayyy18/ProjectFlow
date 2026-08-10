@@ -1,3 +1,17 @@
+-- ============================================================================
+-- LEGACY FILE - DO NOT USE
+-- ============================================================================
+-- This file has been replaced by the migration system in supabase/migrations/
+-- 
+-- PROBLEMS WITH THIS FILE:
+-- 1. Begins with DROP SCHEMA public CASCADE - destructive and unsafe
+-- 2. Creates triggers calling handle_updated_at() but defines it after the triggers
+-- 3. Contains RLS policies that should be in a separate security migration
+-- 4. Not part of an ordered migration system
+-- 
+-- USE INSTEAD: supabase/migrations/20240810_initial_schema.sql
+-- ============================================================================
+
 -- Reset database by dropping-- Reset database
 DROP SCHEMA public CASCADE;
 CREATE SCHEMA public;

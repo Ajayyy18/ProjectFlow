@@ -71,11 +71,10 @@ export interface Database {
         Row: {
           id: string
           team_id: string
-          assigned_by: string | null
           title: string
           description: string | null
           deadline: string
-          status: 'pending' | 'completed'
+          status: 'pending' | 'in_progress' | 'completed'
           completed_at: string | null
           created_at: string
           updated_at: string
@@ -83,11 +82,10 @@ export interface Database {
         Insert: {
           id?: string
           team_id: string
-          assigned_by?: string | null
           title: string
           description?: string | null
           deadline: string
-          status?: 'pending' | 'completed'
+          status?: 'pending' | 'in_progress' | 'completed'
           completed_at?: string | null
           created_at?: string
           updated_at?: string
@@ -95,11 +93,10 @@ export interface Database {
         Update: {
           id?: string
           team_id?: string
-          assigned_by?: string | null
           title?: string
           description?: string | null
           deadline?: string
-          status?: 'pending' | 'completed'
+          status?: 'pending' | 'in_progress' | 'completed'
           completed_at?: string | null
           created_at?: string
           updated_at?: string
