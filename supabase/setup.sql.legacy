@@ -1,3 +1,19 @@
+-- ============================================================================
+-- LEGACY FILE - DO NOT USE
+-- ============================================================================
+-- This file has been replaced by the migration system in supabase/migrations/
+-- 
+-- PROBLEMS WITH THIS FILE:
+-- 1. Refers to non-existent user_role type (should be TEXT)
+-- 2. Contains hard-coded user UUIDs (unsafe and not portable)
+-- 3. Creates demo-admin accounts with predictable credentials
+-- 4. Mixes permissions, data insertion, and policy changes unsafely
+-- 5. Not part of an ordered migration system
+-- 
+-- USE INSTEAD: supabase/migrations/20240810_initial_schema.sql
+-- RLS policies will be added in a separate security-focused branch
+-- ============================================================================
+
 -- Comprehensive fix for all permission and data issues
 -- Run this in Supabase SQL Editor to fix everything
 
