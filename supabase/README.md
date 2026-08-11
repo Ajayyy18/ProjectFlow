@@ -116,8 +116,27 @@ After running the initial schema migration on a fresh test database:
 This will:
 - Create the secure helper functions
 - Apply RLS policies to all tables
+- Set up table-level permissions for the authenticated role
 - Set up column-level permissions for task updates
+- Restrict helper function execution to authenticated users only
 - Ensure the database is properly secured
+
+#### Table and Function Permissions
+
+The migration sets explicit permissions for the `authenticated` role:
+
+**Table Permissions:**
+- `profiles`: SELECT only (read access controlled by RLS policies)
+- `teams`: SELECT, INSERT, UPDATE, DELETE (write access controlled by RLS policies)
+- `tasks`: SELECT, INSERT, DELETE (UPDATE restricted to specific columns)
+- `messages`: SELECT, INSERT (no update/delete allowed)
+
+**Column-Level Restrictions:**
+- `tasks` table: UPDATE permission restricted to `status` and `completed_at` columns only
+
+**Function Execution:**
+- Helper functions (`is_admin`, `is_team_member`, `is_same_team_member`) can only be executed by authenticated users
+- Public access to these functions is revoked for security
 
 ### Row Level Security (RLS) Status
 

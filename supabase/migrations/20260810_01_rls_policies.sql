@@ -159,9 +159,30 @@ CREATE POLICY "messages_insert_policy" ON public.messages
 
 -- Table and Column Permissions for authenticated role
 
+-- Explicit table permissions
+GRANT SELECT ON public.profiles TO authenticated;
+
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON public.teams TO authenticated;
+
+GRANT SELECT, INSERT, DELETE
+ON public.tasks TO authenticated;
+
+GRANT SELECT, INSERT
+ON public.messages TO authenticated;
+
 -- For tasks table: revoke general update permission, grant update only for status and completed_at
 REVOKE UPDATE ON public.tasks FROM authenticated;
 GRANT UPDATE (status, completed_at) ON public.tasks TO authenticated;
+
+-- Restrict helper function execution to authenticated role only
+REVOKE ALL ON FUNCTION public.is_admin() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.is_team_member(UUID) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.is_same_team_member(UUID) FROM PUBLIC;
+
+GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.is_team_member(UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.is_same_team_member(UUID) TO authenticated;
 
 -- Ensure RLS is still enabled on all tables
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
