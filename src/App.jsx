@@ -10,6 +10,7 @@ import Home from './pages/Home';
 import AdminDashboard from './components/admin/AdminDashboard';
 import CreateProject from './components/admin/CreateProject';
 import StudentList from './components/admin/StudentList';
+import TeamManagement from './components/admin/TeamManagement';
 import TaskAssignment from './components/admin/TaskAssignment';
 import Analytics from './components/admin/Analytics';
 
@@ -201,6 +202,7 @@ const App = () => {
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/admin/projects" element={<CreateProject />} />
               <Route path="/admin/students" element={<StudentList />} />
+              <Route path="/admin/teams" element={<TeamManagement />} />
               <Route path="/admin/tasks" element={<TaskAssignment />} />
               <Route path="/admin/analytics" element={<Analytics />} />
             </>
