@@ -26,7 +26,7 @@ const StudentTasks = () => {
           .from('tasks')
           .select('*')
           .eq('team_id', teamData.id)
-          .order('deadline', { ascending: true });
+          .order('due_date', { ascending: true });
 
         if (tasksError) throw tasksError;
         setTasks(tasksData || []);
@@ -56,9 +56,9 @@ const StudentTasks = () => {
     }
   };
 
-  const getStatusClass = (status, deadline) => {
+  const getStatusClass = (status, due_date) => {
     if (status === 'completed') return 'status-success';
-    if (new Date(deadline) < new Date()) return 'status-danger';
+    if (due_date && new Date(due_date) < new Date()) return 'status-danger';
     return 'status-warning';
   };
 
@@ -88,12 +88,12 @@ const StudentTasks = () => {
               <p className="mb-4">{task.description}</p>
               
               <div className="task-meta">
-                <span className={`status-badge ${getStatusClass(task.status, task.deadline)}`}>
+                <span className={`status-badge ${getStatusClass(task.status, task.due_date)}`}>
                   {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
                 </span>
-                
+
                 <span className="text-muted">
-                  Due: {new Date(task.deadline).toLocaleString()}
+                  Due: {task.due_date ? new Date(task.due_date).toLocaleString() : 'Not set'}
                 </span>
                 
                 {task.completed_at && (

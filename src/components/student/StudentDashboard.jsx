@@ -22,7 +22,7 @@ const StudentDashboard = () => {
           name,
           leader_id,
           members,
-          tasks (id, title, description, status, deadline)
+          tasks (id, title, description, status, due_date)
         `)
         .or(`leader_id.eq.${userId},members.cs.{${userId}}`)
         .maybeSingle();
@@ -246,10 +246,10 @@ const StudentDashboard = () => {
                     {tasks.length > 0 ? (
                       <div className="space-y-3">
                         {tasks.map(task => (
-                          <div 
-                            key={task.id} 
+                          <div
+                            key={task.id}
                             className={`p-4 rounded-lg border ${
-                              new Date(task.deadline) < new Date() && task.status !== 'completed'
+                              task.due_date && new Date(task.due_date) < new Date() && task.status !== 'completed'
                                 ? 'border-red-200 bg-red-50'
                                 : 'border-slate-200 hover:border-slate-300'
                             } transition-colors`}
@@ -262,8 +262,8 @@ const StudentDashboard = () => {
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                   </svg>
-                                  <span>{new Date(task.deadline).toLocaleDateString()}</span>
-                                  {new Date(task.deadline) < new Date() && task.status !== 'completed' && (
+                                  <span>{task.due_date ? new Date(task.due_date).toLocaleDateString() : 'Not set'}</span>
+                                  {task.due_date && new Date(task.due_date) < new Date() && task.status !== 'completed' && (
                                     <span className="text-red-600 font-medium">Overdue</span>
                                   )}
                                 </div>
