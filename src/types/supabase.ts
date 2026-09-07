@@ -17,6 +17,7 @@ export interface Database {
           roll_number: string | null
           branch: string | null
           role: 'admin' | 'student'
+          batch_number: number | null
           created_at: string
           updated_at: string
         }
@@ -27,6 +28,7 @@ export interface Database {
           roll_number?: string | null
           branch?: string | null
           role: 'admin' | 'student'
+          batch_number?: number | null
           created_at?: string
           updated_at?: string
         }
@@ -37,6 +39,7 @@ export interface Database {
           roll_number?: string | null
           branch?: string | null
           role?: 'admin' | 'student'
+          batch_number?: number | null
           created_at?: string
           updated_at?: string
         }
@@ -47,6 +50,8 @@ export interface Database {
           name: string
           leader_id: string
           members: string[]
+          branch: string | null
+          batch_number: number | null
           created_at: string
           updated_at: string
         }
@@ -55,6 +60,8 @@ export interface Database {
           name: string
           leader_id: string
           members: string[]
+          branch?: string | null
+          batch_number?: number | null
           created_at?: string
           updated_at?: string
         }
@@ -63,6 +70,8 @@ export interface Database {
           name?: string
           leader_id?: string
           members?: string[]
+          branch?: string | null
+          batch_number?: number | null
           created_at?: string
           updated_at?: string
         }
