@@ -179,12 +179,14 @@ const Analytics = () => {
         const teamCompletedTasks = teamTasks.filter(task => task.status === 'completed').length;
         const teamCompletedOnTime = teamTasks.filter(task =>
           task.status === 'completed' &&
-          new Date(task.completed_at) <= new Date(task.deadline)
+          task.completed_at && task.due_date &&
+          new Date(task.completed_at) <= new Date(task.due_date)
         ).length;
 
         const teamOverdueTasks = teamTasks.filter(task =>
           task.status !== 'completed' &&
-          new Date(task.deadline) < new Date()
+          task.due_date &&
+          new Date(task.due_date) < new Date()
         ).length;
 
         console.log('Team stats:', {

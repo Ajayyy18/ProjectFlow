@@ -69,7 +69,7 @@ const TaskAssignment = () => {
           name,
           leader_id,
           members,
-          tasks (id, title, description, status, deadline)
+          tasks (id, title, description, status, due_date)
         `);
 
       if (teamsError) {
@@ -122,22 +122,48 @@ const TaskAssignment = () => {
         return;
       }
 
-      const { data: task, error: createError } = await supabase
-        .from('tasks')
-        .insert({
-          team_id: taskForm.teamId,
-          title: taskForm.title,
-          description: taskForm.description,
-          deadline: new Date(taskForm.dueDate).toISOString(),
-          status: 'pending'
-        })
-        .select()
-        .single();
+      const taskData = {
+        title: taskForm.title,
+        description: taskForm.description,
+        due_date: new Date(taskForm.dueDate).toISOString(),
+        status: 'pending'
+      };
 
-      if (createError) {
-        console.error('Error creating task:', createError);
-        setError('Failed to create task: ' + createError.message);
-        return;
+      if (taskForm.teamId === 'all') {
+        // Assign task to all teams
+        const teamIds = teams.map(team => team.id);
+        const tasksToInsert = teamIds.map(teamId => ({
+          ...taskData,
+          team_id: teamId
+        }));
+
+        const { error: createError } = await supabase
+          .from('tasks')
+          .insert(tasksToInsert);
+
+        if (createError) {
+          console.error('Error creating tasks:', createError);
+          setError('Failed to create tasks: ' + createError.message);
+          return;
+        }
+
+        alert(`Task assigned to ${teamIds.length} teams successfully!`);
+      } else {
+        // Assign task to single team
+        const { error: createError } = await supabase
+          .from('tasks')
+          .insert({
+            ...taskData,
+            team_id: taskForm.teamId
+          });
+
+        if (createError) {
+          console.error('Error creating task:', createError);
+          setError('Failed to create task: ' + createError.message);
+          return;
+        }
+
+        alert('Task assigned successfully!');
       }
 
       setTaskForm({
@@ -147,7 +173,6 @@ const TaskAssignment = () => {
         teamId: ''
       });
       await fetchTeams();
-      alert('Task assigned successfully!');
     } catch (error) {
       console.error('Error in task creation:', error);
       setError('Failed to create task');
@@ -180,121 +205,191 @@ const TaskAssignment = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-4 max-w-3xl">
-      <h1 className="text-2xl font-bold mb-6">Task Assignment</h1>
-      
-      <div className="bg-white shadow overflow-hidden rounded-lg mb-4">
-        <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
-          <h3 className="text-lg leading-6 font-medium text-gray-900">Assign New Task</h3>
-          <p className="mt-1 text-sm text-gray-500">Create and assign tasks to teams</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-900">Task Assignment</h1>
+              <p className="mt-2 text-slate-600">Create and manage tasks for your teams</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="bg-white rounded-lg px-4 py-2 shadow-sm border border-slate-200">
+                <span className="text-sm text-slate-600">Total Teams: </span>
+                <span className="text-sm font-semibold text-slate-900">{teams.length}</span>
+              </div>
+              <div className="bg-white rounded-lg px-4 py-2 shadow-sm border border-slate-200">
+                <span className="text-sm text-slate-600">Total Tasks: </span>
+                <span className="text-sm font-semibold text-slate-900">
+                  {teams.reduce((acc, team) => acc + (team.tasks?.length || 0), 0)}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="px-4 py-5 sm:p-6">
-          <form onSubmit={handleTaskSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Select Team</label>
-              <select
-                value={taskForm.teamId}
-                onChange={(e) => setTaskForm({ ...taskForm, teamId: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              >
-                <option value="">Choose a team</option>
-                {teams.map((team) => (
-                  <option key={team.id} value={team.id}>
-                    {team.name} (Leader: {team.leader_name})
-                  </option>
-                ))}
-              </select>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Task Form */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 sticky top-8">
+              <div className="px-6 py-5 border-b border-slate-200">
+                <h2 className="text-xl font-semibold text-slate-900">Create New Task</h2>
+                <p className="mt-1 text-sm text-slate-500">Fill in the details below</p>
+              </div>
+
+              <div className="px-6 py-5">
+                <form onSubmit={handleTaskSubmit} className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Select Team</label>
+                    <select
+                      value={taskForm.teamId}
+                      onChange={(e) => setTaskForm({ ...taskForm, teamId: e.target.value })}
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    >
+                      <option value="">Choose a team</option>
+                      <option value="all">🌟 All Teams</option>
+                      {teams.map((team) => (
+                        <option key={team.id} value={team.id}>
+                          {team.name} — {team.leader_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Task Title</label>
+                    <input
+                      type="text"
+                      value={taskForm.title}
+                      onChange={(e) => setTaskForm({ ...taskForm, title: e.target.value })}
+                      placeholder="Enter task title..."
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Description</label>
+                    <textarea
+                      value={taskForm.description}
+                      onChange={(e) => setTaskForm({ ...taskForm, description: e.target.value })}
+                      rows={4}
+                      placeholder="Describe the task..."
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Due Date</label>
+                    <input
+                      type="datetime-local"
+                      value={taskForm.dueDate}
+                      onChange={(e) => setTaskForm({ ...taskForm, dueDate: e.target.value })}
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all shadow-md hover:shadow-lg"
+                  >
+                    Assign Task
+                  </button>
+                </form>
+              </div>
             </div>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Task Title</label>
-              <input
-                type="text"
-                value={taskForm.title}
-                onChange={(e) => setTaskForm({ ...taskForm, title: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
+          {/* Right Column - Tasks Display */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+              <div className="px-6 py-5 border-b border-slate-200">
+                <h2 className="text-xl font-semibold text-slate-900">All Tasks</h2>
+                <p className="mt-1 text-sm text-slate-500">Overview of assigned tasks by team</p>
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Description</label>
-              <textarea
-                value={taskForm.description}
-                onChange={(e) => setTaskForm({ ...taskForm, description: e.target.value })}
-                rows={3}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Due Date</label>
-              <input
-                type="datetime-local"
-                value={taskForm.dueDate}
-                onChange={(e) => setTaskForm({ ...taskForm, dueDate: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-
-            <div className="pt-4">
-              <button
-                type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Assign Task
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      {/* Display Existing Tasks */}
-      <div className="mt-8 bg-white shadow overflow-hidden rounded-lg">
-        <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
-          <h3 className="text-lg leading-6 font-medium text-gray-900">Existing Tasks</h3>
-          <p className="mt-1 text-sm text-gray-500">View and manage team tasks</p>
-        </div>
-
-        <div className="px-4 py-5 sm:p-6">
-          {teams.some(team => team.tasks?.length > 0) ? (
-            <div className="space-y-4 mt-4">
-              {teams.map(team => (
-                team.tasks?.length > 0 && (
-                  <div key={team.id} className="border-t border-gray-200 pt-4 first:border-t-0 first:pt-0">
-                    <h4 className="text-lg font-medium text-gray-900 mb-4">{team.name}</h4>
-                    <div className="space-y-2">
-                      {team.tasks.map(task => (
-                        <div key={task.id} className="bg-gray-50 rounded-lg p-4">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h5 className="text-base font-medium">{task.title}</h5>
-                              <p className="text-sm text-gray-600 mt-1">{task.description}</p>
-                              <p className="text-xs text-gray-500 mt-2">
-                                Due: {new Date(task.deadline).toLocaleString()}
-                              </p>
+              <div className="px-6 py-5">
+                {teams.some(team => team.tasks?.length > 0) ? (
+                  <div className="space-y-6">
+                    {teams.map(team => (
+                      team.tasks?.length > 0 && (
+                        <div key={team.id} className="border border-slate-200 rounded-lg overflow-hidden">
+                          <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                  <span className="text-lg font-semibold text-blue-600">
+                                    {team.name.charAt(0).toUpperCase()}
+                                  </span>
+                                </div>
+                                <div>
+                                  <h3 className="font-semibold text-slate-900">{team.name}</h3>
+                                  <p className="text-xs text-slate-500">{team.leader_name}</p>
+                                </div>
+                              </div>
+                              <span className="text-xs font-medium text-slate-500 bg-white px-3 py-1 rounded-full border border-slate-200">
+                                {team.tasks.length} task{team.tasks.length !== 1 ? 's' : ''}
+                              </span>
                             </div>
-                            <span
-                              className={`px-2 py-1 text-xs rounded-full ${task.status === 'completed'
-                                ? 'bg-green-100 text-green-800'
-                                : task.status === 'in_progress'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : 'bg-gray-100 text-gray-800'
-                              }`}
-                            >
-                              {task.status.replace('_', ' ')}
-                            </span>
+                          </div>
+
+                          <div className="divide-y divide-slate-100">
+                            {team.tasks.map(task => (
+                              <div key={task.id} className="p-4 hover:bg-slate-50 transition-colors">
+                                <div className="flex items-start justify-between gap-4">
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="font-medium text-slate-900 truncate">{task.title}</h4>
+                                    <p className="text-sm text-slate-600 mt-1 line-clamp-2">{task.description}</p>
+                                    <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
+                                      <div className="flex items-center gap-1.5">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <span>{task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No due date'}</span>
+                                      </div>
+                                      {task.due_date && new Date(task.due_date) < new Date() && task.status !== 'completed' && (
+                                        <span className="text-red-600 font-medium">Overdue</span>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  <div className="flex-shrink-0">
+                                    <span
+                                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                                        task.status === 'completed'
+                                          ? 'bg-emerald-100 text-emerald-700'
+                                          : task.status === 'in_progress'
+                                          ? 'bg-amber-100 text-amber-700'
+                                          : 'bg-slate-100 text-slate-700'
+                                      }`}
+                                    >
+                                      {task.status === 'completed' && '✓ '}
+                                      {task.status === 'in_progress' && '◷ '}
+                                      {task.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      )
+                    ))}
                   </div>
-                )
-              ))}
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-medium text-slate-900 mb-2">No tasks assigned yet</h3>
+                    <p className="text-slate-500">Create your first task using the form on the left</p>
+                  </div>
+                )}
+              </div>
             </div>
-          ) : (
-            <p className="text-gray-500 text-center py-4">No tasks have been assigned yet.</p>
-          )}
+          </div>
         </div>
       </div>
     </div>
